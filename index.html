@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardiovascular Futures</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="dashboard.js" defer></script>
+</head>
+
+<body>
+  <main class="page">
+    <section class="cover">
+      <p class="unit">FIT2179 Data Visualisation 2</p>
+      <h1>Cardiovascular Futures</h1>
+      <p class="subtitle">
+        Cardiovascular disease remains a serious future burden, even for Australia. Lower risk than
+        global hotspots does not mean the problem is solved.
+      </p>
+      <p class="interaction-note">
+        This dashboard follows the problem from global burden to Australian risk, then explains why
+        deaths can keep rising, which diseases and risk factors drive the burden, and whether
+        prevention systems can change future outcomes.
+      </p>
+    </section>
+
+    <section class="aus-evidence">
+      <div class="evidence-header">
+        <p class="section-kicker">Australia Context</p>
+        <h2>Why cardiovascular disease still matters in Australia</h2>
+      </div>
+
+      <div class="evidence-grid">
+        <article class="evidence-card">
+          <div class="icon">&#9829;</div>
+          <h3>4.5M+</h3>
+          <p>Australians self-report living with cardiovascular disease.</p>
+        </article>
+
+        <article class="evidence-card">
+          <div class="icon">&frac14;</div>
+          <h3>1 in 4</h3>
+          <p>Australian deaths are caused by cardiovascular disease.</p>
+        </article>
+
+        <article class="evidence-card">
+          <div class="icon">&#9201;</div>
+          <h3>12 mins</h3>
+          <p>One Australian dies from CVD roughly every 12 minutes.</p>
+        </article>
+
+        <article class="evidence-card">
+          <div class="icon">$</div>
+          <h3>$12.7B</h3>
+          <p>Estimated annual health expenditure linked to cardiovascular disease.</p>
+        </article>
+      </div>
+
+      <p class="hook">
+        Australia is not the centre of the global cardiovascular crisis, but the disease still
+        shapes national deaths, healthcare spending, ageing-related demand, and prevention
+        priorities.
+      </p>
+
+      <p class="source-note">
+        Source: Heart Foundation Australia key cardiovascular disease statistics.
+      </p>
+    </section>
+
+    <section class="chapter-break">
+      <p class="chapter-label">Chapter 1</p>
+      <h2>How serious is cardiovascular disease?</h2>
+      <p>
+        The first chapter establishes where future cardiovascular pressure is concentrated, then
+        compares Australia against that wider global pattern.
+      </p>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">1 - World Burden</p>
+      <h2>How do mortality, prevention and healthcare pressure vary worldwide?</h2>
+      <p>
+        The map shows that future cardiovascular risk is not only a medical issue, but also a
+        systems issue. Countries with higher mortality often overlap with weaker prevention capacity
+        and greater healthcare pressure, suggesting that future outcomes depend heavily on how well
+        health systems can detect, prevent, and manage disease before it becomes severe.
+      </p>
+
+      <ul class="insight-list">
+        <li>High-burden regions may face pressure from population growth, ageing, and weaker access to early prevention.</li>
+        <li>Use the metric selector to test whether mortality, DALYs, prevention, pressure, and risk burden cluster in the same places.</li>
+      </ul>
+
+      <div class="viz" id="map"></div>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">2 - Australia In Context</p>
+      <h2>How does Australia&apos;s future compare with the rest of the world?</h2>
+      <p>
+        Australia is projected to remain below global and high-burden benchmarks, which likely
+        reflects stronger primary care access, earlier diagnosis, preventive medication use, and
+        better treatment coverage. However, a lower rate does not mean low burden, because ageing
+        populations can still create more patients needing long-term cardiovascular care.
+      </p>
+
+      <ul class="insight-list">
+        <li>Australia&apos;s advantage appears to come from system capacity, not from cardiovascular risk disappearing.</li>
+        <li>The comparison shows Australia is relatively protected, but not unaffected.</li>
+      </ul>
+
+      <div class="viz" id="ausProtection"></div>
+    </section>
+
+    <section class="chapter-break">
+      <p class="chapter-label">Chapter 2</p>
+      <h2>Why are deaths still increasing?</h2>
+      <p>
+        The next chapter explains the main paradox: cardiovascular care can improve while total
+        deaths still rise because the population is growing, ageing, and living longer with chronic
+        disease.
+      </p>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">3 - Historical Mortality</p>
+      <h2>Has cardiovascular disease remained a dominant killer over time?</h2>
+      <p>
+        Cardiovascular disease has stayed structurally large over time because it is tied to common,
+        long-term risk factors such as high blood pressure, cholesterol, diabetes, smoking, obesity,
+        and ageing. Treatment improvements reduce fatality risk, but they do not remove the
+        underlying chronic disease burden.
+      </p>
+
+      <ul class="insight-list">
+        <li>CVD remains dominant because many of its drivers are widespread and accumulate over decades.</li>
+        <li>Progress can reduce individual risk while the total number of affected people remains high.</li>
+      </ul>
+
+      <div class="viz" id="streamgraph"></div>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">4 - The Paradox</p>
+      <h2>Why are deaths still rising if cardiovascular care is improving?</h2>
+      <p>
+        Age-standardised rates fall because prevention, treatment, and survival are improving. Total
+        deaths can still rise because crude deaths are shaped by population size and age structure.
+        In simple terms, the average person may be less likely to die from CVD, but there may be
+        more older people living at ages where CVD risk is naturally higher.
+      </p>
+
+      <ul class="insight-list">
+        <li>Rates decline, suggesting care is improving; deaths rise, suggesting health-system workload can still grow.</li>
+        <li>This means prevention must reduce risk earlier, before ageing populations convert risk into hospital demand.</li>
+      </ul>
+
+      <div class="viz" id="growthParadox"></div>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">5 - Future Pathways</p>
+      <h2>Will all countries benefit equally from future progress?</h2>
+      <p>
+        Most selected countries are projected to improve by 2050, but countries starting from a
+        higher-risk position often remain worse off even after improvement. This suggests future
+        progress may narrow gaps without fully removing structural inequality in prevention,
+        treatment access, and health-system capacity.
+      </p>
+
+      <ul class="insight-list">
+        <li>Improvement is widespread, but starting position matters: high-burden countries can improve and still remain high-burden.</li>
+        <li>The gap by 2050 suggests healthcare investment and prevention capacity may shape how quickly countries catch up.</li>
+      </ul>
+
+      <div class="viz" id="trend"></div>
+    </section>
+
+    <section class="chapter-break">
+      <p class="chapter-label">Chapter 3</p>
+      <h2>What is driving future burden?</h2>
+      <p>
+        Future burden is not spread evenly across diseases or risk factors. The strongest prevention
+        opportunities come from targeting the conditions and exposures responsible for the largest
+        share of projected deaths.
+      </p>
+    </section>
+
+    <div class="story-grid">
+      <section class="story">
+        <p class="section-kicker">6 - Disease Mix</p>
+        <h2>Which diseases should prevention efforts target first?</h2>
+        <p>
+          Ischaemic heart disease and stroke dominate future cardiovascular mortality because they
+          are strongly linked to common, modifiable risks such as blood pressure, cholesterol,
+          smoking, diabetes, and obesity. Targeting these two conditions is therefore likely to
+          deliver the largest population-level benefit.
+        </p>
+
+        <ul class="insight-list">
+          <li>The disease mix shows prevention should focus first on the conditions contributing the largest share of deaths.</li>
+          <li>Click a disease block to spotlight the risks most closely tied to it.</li>
+        </ul>
+
+        <div class="viz" id="diseaseBar"></div>
+      </section>
+
+      <section class="story">
+        <p class="section-kicker">7 - Risk Factors</p>
+        <h2>What is driving future cardiovascular mortality?</h2>
+        <p>
+          The strongest drivers are modifiable, meaning they can be influenced before disease
+          develops. High blood pressure is especially important because it contributes to several
+          cardiovascular outcomes at once, including heart disease, stroke, and heart failure.
+        </p>
+
+        <ul class="insight-list">
+          <li>High blood pressure stands out because it affects multiple disease pathways, not just one condition.</li>
+          <li>The chart below updates its emphasis when a disease is selected in the treemap.</li>
+        </ul>
+
+        <div class="viz" id="riskLollipop"></div>
+      </section>
+    </div>
+
+    <section class="chapter-break">
+      <p class="chapter-label">Chapter 4</p>
+      <h2>Can prevention change the future?</h2>
+      <p>
+        If future burden is driven by modifiable risks, then prevention and readiness should matter.
+        This chapter tests whether stronger systems are associated with better projected outcomes.
+      </p>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">8 - Prevention And Outcomes</p>
+      <h2>Does prevention investment translate into better outcomes?</h2>
+      <p>
+        Countries with stronger prevention capacity generally show lower projected cardiovascular
+        mortality. This does not prove prevention is the only cause, because income, demographics,
+        healthcare quality, and policy also matter, but the relationship suggests prevention is a
+        major part of why some countries manage future burden better than others.
+      </p>
+
+      <ul class="insight-list">
+        <li>The downward relationship suggests prevention can shift outcomes before disease becomes severe.</li>
+        <li>Countries away from the trendline show that prevention interacts with wider factors such as age structure, access, and system quality.</li>
+      </ul>
+
+      <div class="viz" id="bubble"></div>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">9 - System Readiness</p>
+      <h2>Which countries are best prepared for future cardiovascular challenges?</h2>
+      <p>
+        Preparedness matters because risk does not automatically translate into the same outcome
+        everywhere. Countries with stronger prevention, treatment, medication access, and
+        rehabilitation are better positioned to absorb future burden, while weaker systems may face
+        worse outcomes even when risk levels appear similar.
+      </p>
+
+      <ul class="insight-list">
+        <li>Australia can be judged against benchmarks to see whether its system strength is broad or uneven.</li>
+        <li>Lower readiness suggests prevention alone may not be enough without treatment access and rehabilitation capacity.</li>
+      </ul>
+
+      <div class="viz" id="heatmap"></div>
+    </section>
+
+    <section class="chapter-break">
+      <p class="chapter-label">Chapter 5</p>
+      <h2>Who is most at risk?</h2>
+      <p>
+        The final chapter moves from country-level patterns to patient-level risk, showing how
+        cardiovascular burden is often produced by several overlapping clinical and lifestyle
+        factors.
+      </p>
+    </section>
+
+    <section class="story">
+      <p class="section-kicker">10 - High-Risk Profile</p>
+      <h2>Which lifestyle and clinical factors separate high-risk groups?</h2>
+      <p>
+        High-risk patients usually do not differ on one factor alone. Risk tends to build through a
+        cluster of disadvantages, such as blood pressure, cholesterol, BMI, age, glucose, smoking,
+        stress, and activity patterns. This is why early prevention is more effective than waiting
+        until several risks have already accumulated.
+      </p>
+
+      <ul class="insight-list">
+        <li>The high-risk profile reflects risk accumulation rather than a single isolated cause.</li>
+        <li>This supports earlier intervention because combined risks become harder and more expensive to reverse later.</li>
+      </ul>
+
+      <div class="viz" id="lifestyleDiff"></div>
+    </section>
+
+    <section class="takeaway">
+      <p class="section-kicker">Final Takeaway</p>
+      <h2>Cardiovascular risk is not only a future mortality problem.</h2>
+      <p>
+        The dashboard shows that the future cardiovascular challenge is driven by more than disease
+        rates alone. Mortality rates may decline, but ageing populations, population growth, and
+        persistent risk factors can still increase the absolute burden on health systems. Australia
+        appears comparatively protected, but the disease remains significant because national ageing,
+        healthcare spending, and long-term prevention needs continue to grow.
+      </p>
+      <p>
+        The strongest opportunity is prevention. Countries with stronger prevention capacity and
+        broader health-system readiness appear better positioned to reduce future mortality, while
+        weaker systems remain vulnerable even in a world where overall rates improve. This means the
+        future burden is not inevitable, but reducing it requires action before risk factors become
+        disease and before disease becomes long-term system pressure.
+      </p>
+    </section>
+
+    <section class="sources">
+      <p class="section-kicker">Data Sources</p>
+
+      <ul class="sources-list">
+        <li>Institute for Health Metrics and Evaluation (IHME) - Global Burden of Disease (GBD) Study</li>
+        <li>World Health Organization (WHO) - Global Health Observatory (GHO) indicators</li>
+        <li>Australian Bureau of Statistics (ABS) - National Health Survey 2022</li>
+        <li>Heart Foundation Australia - Cardiovascular Disease Statistics</li>
+        <li>Our World in Data - Historical Causes of Death Dataset</li>
+        <li>Kaggle - Heart Attack Prediction Dataset</li>
+        <li>Kaggle - Cardiovascular Disease Dataset</li>
+      </ul>
+
+      <p class="method-note">
+        Data were cleaned, transformed, merged, and visualised using Vega and Vega-Lite. Several
+        derived indicators, including Prevention Score, Healthcare Pressure Score, and Risk Burden
+        Score, were created to support comparative analysis of future cardiovascular burden,
+        prevention capacity, and system readiness.
+      </p>
+    </section>
+
+    <footer>
+      <p>Author: Chaitra Shinde &middot; Built with Vega, Vega-Lite, HTML, CSS, and GitHub Pages</p>
+      <p>FIT2179 Data Visualisation 2 &middot; Monash University &middot; Semester 1, 2026</p>
+      <p>Visualisation published: May 2026</p>
+      <p>
+        AI acknowledgement: Generative AI tools were used to assist with text refinement,
+        debugging, and design iteration. All visualisation design decisions, data selection,
+        analysis, implementation, and final content were reviewed and produced by the author.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
