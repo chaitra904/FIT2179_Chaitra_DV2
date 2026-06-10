@@ -1,0 +1,163 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 410,
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    }
+  },
+  "data": {
+    "url": "data/global_cvd_burden_2025_2050.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.year == 2050"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "boxplot",
+        "extent": "min-max",
+        "size": 52,
+        "color": "#f4d9e2"
+      },
+      "encoding": {
+        "x": {
+          "field": "continent",
+          "type": "nominal",
+          "title": "Continent",
+          "sort": ["Africa", "Americas", "Asia", "Europe", "Oceania"],
+          "axis": {
+            "labelAngle": 0,
+            "labelFontWeight": "bold"
+          }
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative",
+          "title": "Projected mortality rate per 100,000",
+          "scale": {
+            "domain": [0, 350]
+          }
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 52,
+        "opacity": 0.3,
+        "stroke": "#ffffff",
+        "strokeWidth": 0.8
+      },
+      "encoding": {
+        "x": {
+          "field": "continent",
+          "type": "nominal",
+          "sort": ["Africa", "Americas", "Asia", "Europe", "Oceania"]
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "color": {
+          "field": "continent",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": ["Africa", "Americas", "Asia", "Europe", "Oceania"],
+            "range": ["#6f2743", "#96445f", "#ba5f7d", "#d58ea4", "#efc8d4"]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "continent",
+            "title": "Continent"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.country == 'Australia'"
+        }
+      ],
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "shape": "diamond",
+        "size": 220,
+        "color": "#4f2134",
+        "stroke": "#fffdfb",
+        "strokeWidth": 1.8
+      },
+      "encoding": {
+        "x": {
+          "field": "continent",
+          "type": "nominal",
+          "sort": ["Africa", "Americas", "Asia", "Europe", "Oceania"]
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.country == 'Australia'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "dy": -10,
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "x": {
+          "field": "continent",
+          "type": "nominal",
+          "sort": ["Africa", "Americas", "Asia", "Europe", "Oceania"]
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "text": {
+          "value": "Australia"
+        }
+      }
+    }
+  ]
+}

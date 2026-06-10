@@ -1,0 +1,238 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 470,
+  "height": 360,
+  "padding": 4,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "background": "transparent",
+  "signals": [
+    {
+      "name": "selectedDiseaseName",
+      "value": "All diseases"
+    }
+  ],
+  "data": [
+    {
+      "name": "tree",
+      "values": [
+        { "id": "root" },
+        {
+          "id": "Ischaemic heart disease",
+          "shortName": "Ischaemic heart disease",
+          "parent": "root",
+          "value": 12591540,
+          "share": 42.3,
+          "shareLabel": "42.3%"
+        },
+        {
+          "id": "Stroke",
+          "shortName": "Stroke",
+          "parent": "root",
+          "value": 9771125,
+          "share": 32.8,
+          "shareLabel": "32.8%"
+        },
+        {
+          "id": "Hypertensive heart disease",
+          "shortName": "Hypertensive heart disease",
+          "parent": "root",
+          "value": 3224735,
+          "share": 10.8,
+          "shareLabel": "10.8%"
+        },
+        {
+          "id": "Heart failure",
+          "shortName": "Heart failure",
+          "parent": "root",
+          "value": 2902256,
+          "share": 9.7,
+          "shareLabel": "9.7%"
+        },
+        {
+          "id": "Peripheral artery disease",
+          "shortName": "Peripheral artery disease",
+          "parent": "root",
+          "value": 1289874,
+          "share": 4.3,
+          "shareLabel": "4.3%"
+        }
+      ],
+      "transform": [
+        {
+          "type": "stratify",
+          "key": "id",
+          "parentKey": "parent"
+        },
+        {
+          "type": "treemap",
+          "field": "value",
+          "sort": {
+            "field": "value",
+            "order": "descending"
+          },
+          "round": true,
+          "method": "squarify",
+          "paddingInner": 6,
+          "size": [
+            { "signal": "width" },
+            { "signal": "height" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodes",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth === 1"
+        },
+        {
+          "type": "formula",
+          "expr": "format(datum.value / 1000000, '.1f') + 'M deaths'",
+          "as": "valueLabel"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.x1 - datum.x0",
+          "as": "boxWidth"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.y1 - datum.y0",
+          "as": "boxHeight"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.boxWidth < 95 ? split(datum.id, ' ') : [datum.id]",
+          "as": "labelLines"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.boxWidth < 95 ? 10 : 14",
+          "as": "labelFontSize"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.boxWidth < 95 ? 10 : 12",
+          "as": "shareFontSize"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.boxWidth < 95 ? datum.x0 + 8 : datum.x0 + 14",
+          "as": "labelX"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.boxWidth < 95 ? datum.y0 + 17 : datum.y0 + 24",
+          "as": "nameY"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.boxWidth < 95 ? datum.y1 - 12 : datum.y0 + 46",
+          "as": "shareY"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": [
+        "Ischaemic heart disease",
+        "Stroke",
+        "Hypertensive heart disease",
+        "Heart failure",
+        "Peripheral artery disease"
+      ],
+      "range": ["#6f2743", "#94405f", "#b85b78", "#d8879f", "#efc8d5"]
+    }
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "from": { "data": "nodes" },
+      "encode": {
+        "enter": {
+          "cornerRadius": { "value": 18 }
+        },
+        "update": {
+          "x": { "field": "x0" },
+          "y": { "field": "y0" },
+          "x2": { "field": "x1" },
+          "y2": { "field": "y1" },
+          "fill": { "scale": "color", "field": "id" },
+          "stroke": {
+            "signal": "selectedDiseaseName === 'All diseases' || datum.id === selectedDiseaseName ? '#fffaf8' : '#f7e8ee'"
+          },
+          "strokeWidth": {
+            "signal": "datum.id === selectedDiseaseName ? 3 : 1.8"
+          },
+          "fillOpacity": {
+            "signal": "selectedDiseaseName === 'All diseases' || datum.id === selectedDiseaseName ? 1 : 0.33"
+          },
+          "cursor": { "value": "pointer" },
+          "tooltip": {
+            "signal": "{'Disease': datum.id, 'Projected deaths': format(datum.value, ',d'), 'Share of future CVD deaths': datum.shareLabel}"
+          }
+        },
+        "hover": {
+          "fillOpacity": { "value": 1 }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "nodes"
+      },
+      "encode": {
+        "update": {
+          "x": { "field": "labelX" },
+          "y": { "field": "nameY" },
+          "text": { "field": "labelLines" },
+          "font": { "value": "Manrope" },
+          "fontSize": { "field": "labelFontSize" },
+          "fontWeight": { "value": 800 },
+          "lineBreak": { "value": " " },
+          "lineHeight": { "value": 12 },
+          "limit": {
+            "signal": "max(30, datum.boxWidth - 14)"
+          },
+          "fill": {
+            "signal": "datum.id === 'Peripheral artery disease' ? '#5e2740' : '#fffdfb'"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "nodes"
+      },
+      "encode": {
+        "update": {
+          "x": { "field": "labelX" },
+          "y": { "field": "shareY" },
+          "text": {
+            "signal": "datum.boxWidth < 95 ? datum.shareLabel : datum.shareLabel + ' of future deaths'"
+          },
+          "font": { "value": "Manrope" },
+          "fontSize": { "field": "shareFontSize" },
+          "fontWeight": { "value": 700 },
+          "limit": {
+            "signal": "max(30, datum.boxWidth - 14)"
+          },
+          "fill": {
+            "signal": "datum.id === 'Peripheral artery disease' ? '#7b2d4d' : '#fff4f7'"
+          }
+        }
+      }
+    }
+  ]
+}

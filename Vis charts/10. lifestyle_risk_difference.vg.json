@@ -1,0 +1,221 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 400,
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    }
+  },
+  "params": [
+    {
+      "name": "profileCohort",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "name": "Profile cohort: ",
+        "options": ["All", "Male", "Female"]
+      }
+    }
+  ],
+  "data": {
+    "url": "data/heart_attack_prediction_dataset.csv"
+  },
+  "transform": [
+    {
+      "calculate": "datum.Sex",
+      "as": "cohort"
+    },
+    {
+      "filter": "profileCohort == 'All' || datum.cohort == profileCohort"
+    },
+    {
+      "fold": [
+        "Cholesterol",
+        "Triglycerides",
+        "Exercise Hours Per Week",
+        "Sleep Hours Per Day",
+        "Sedentary Hours Per Day",
+        "Stress Level",
+        "BMI"
+      ],
+      "as": ["factor_raw", "value"]
+    },
+    {
+      "aggregate": [
+        {
+          "op": "mean",
+          "field": "value",
+          "as": "mean_value"
+        }
+      ],
+      "groupby": ["Heart Attack Risk", "factor_raw"]
+    },
+    {
+      "pivot": "Heart Attack Risk",
+      "value": "mean_value",
+      "groupby": ["factor_raw"]
+    },
+    {
+      "calculate": "datum['0']",
+      "as": "low_value"
+    },
+    {
+      "calculate": "datum['1']",
+      "as": "high_value"
+    },
+    {
+      "calculate": "datum.low_value == 0 ? 0 : ((datum.high_value / datum.low_value) - 1) * 100",
+      "as": "delta_pct"
+    },
+    {
+      "calculate": "abs(datum.delta_pct)",
+      "as": "abs_delta"
+    },
+    {
+      "calculate": "format(datum.delta_pct, '+.1f') + '%'",
+      "as": "delta_label"
+    },
+    {
+      "calculate": "datum.factor_raw == 'Exercise Hours Per Week' ? 'Exercise hours' : datum.factor_raw == 'Sleep Hours Per Day' ? 'Sleep duration' : datum.factor_raw == 'Sedentary Hours Per Day' ? 'Sedentary time' : datum.factor_raw == 'Stress Level' ? 'Stress' : datum.factor_raw",
+      "as": "factor"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "strokeDash": [5, 4],
+        "strokeWidth": 1.4,
+        "color": "#d7a3b4"
+      },
+      "encoding": {
+        "x": {
+          "datum": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 8
+      },
+      "encoding": {
+        "y": {
+          "field": "factor",
+          "type": "nominal",
+          "sort": {
+            "field": "abs_delta",
+            "order": "descending"
+          },
+          "title": null,
+          "axis": {
+            "labelFontWeight": "bold"
+          }
+        },
+        "x": {
+          "field": "delta_pct",
+          "type": "quantitative",
+          "title": "Difference from low-risk average (%)",
+          "scale": {
+            "domain": [-3, 3]
+          }
+        },
+        "color": {
+          "condition": {
+            "test": "datum.delta_pct >= 0",
+            "value": "#7b2d4d"
+          },
+          "value": "#e1a1b4"
+        },
+        "tooltip": [
+          {
+            "field": "factor",
+            "title": "Factor"
+          },
+          {
+            "field": "low_value",
+            "title": "Low-risk mean",
+            "format": ".2f"
+          },
+          {
+            "field": "high_value",
+            "title": "High-risk mean",
+            "format": ".2f"
+          },
+          {
+            "field": "delta_pct",
+            "title": "Difference",
+            "format": "+.2f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.delta_pct >= 0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 8,
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "y": {
+          "field": "factor",
+          "type": "nominal",
+          "sort": {
+            "field": "abs_delta",
+            "order": "descending"
+          }
+        },
+        "x": {
+          "field": "delta_pct",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "delta_label"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.delta_pct < 0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -8,
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "y": {
+          "field": "factor",
+          "type": "nominal",
+          "sort": {
+            "field": "abs_delta",
+            "order": "descending"
+          }
+        },
+        "x": {
+          "field": "delta_pct",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "delta_label"
+        }
+      }
+    }
+  ]
+}

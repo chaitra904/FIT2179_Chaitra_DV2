@@ -1,0 +1,160 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 400,
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    }
+  },
+  "data": {
+    "url": "data/smoking_risk_data.csv"
+  },
+  "transform": [
+    {
+      "filter": "isValid(datum.sysBP)"
+    },
+    {
+      "calculate": "datum.age < 45 ? 'Under 45' : datum.age < 55 ? '45-54' : datum.age < 65 ? '55-64' : '65+'",
+      "as": "age_group"
+    },
+    {
+      "calculate": "datum.is_smoking == 'NO' ? 'Non-smoker' : datum.cigsPerDay < 10 ? 'Light smoker' : datum.cigsPerDay < 20 ? 'Moderate smoker' : 'Heavy smoker'",
+      "as": "smoke_group"
+    },
+    {
+      "aggregate": [
+        {
+          "op": "mean",
+          "field": "sysBP",
+          "as": "avg_sysbp"
+        },
+        {
+          "op": "count",
+          "as": "patients"
+        }
+      ],
+      "groupby": ["age_group", "smoke_group"]
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "cornerRadius": 8,
+        "stroke": "#fff9f7",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "age_group",
+          "type": "nominal",
+          "title": "Age group",
+          "sort": ["Under 45", "45-54", "55-64", "65+"],
+          "axis": {
+            "labelAngle": 0,
+            "labelFontWeight": "bold"
+          }
+        },
+        "y": {
+          "field": "smoke_group",
+          "type": "nominal",
+          "title": "Smoking intensity",
+          "sort": ["Non-smoker", "Light smoker", "Moderate smoker", "Heavy smoker"],
+          "axis": {
+            "labelFontWeight": "bold"
+          }
+        },
+        "color": {
+          "field": "avg_sysbp",
+          "type": "quantitative",
+          "title": "Average systolic BP",
+          "scale": {
+            "domain": [110, 180],
+            "range": ["#fff9fb", "#fdf0f4", "#f8dee7", "#f0c9d7", "#e7b1c4"]
+          },
+          "legend": {
+            "orient": "right"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "age_group",
+            "title": "Age group"
+          },
+          {
+            "field": "smoke_group",
+            "title": "Smoking intensity"
+          },
+          {
+            "field": "avg_sysbp",
+            "title": "Average systolic BP",
+            "format": ".1f"
+          },
+          {
+            "field": "patients",
+            "title": "Patients",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "filled": true,
+        "color": "#fffafc",
+        "opacity": 0.28,
+        "stroke": "#7b2d4d",
+        "strokeWidth": 0.8
+      },
+      "encoding": {
+        "x": {
+          "field": "age_group",
+          "type": "nominal",
+          "sort": ["Under 45", "45-54", "55-64", "65+"]
+        },
+        "y": {
+          "field": "smoke_group",
+          "type": "nominal",
+          "sort": ["Non-smoker", "Light smoker", "Moderate smoker", "Heavy smoker"]
+        },
+        "size": {
+          "field": "patients",
+          "type": "quantitative",
+          "legend": null,
+          "scale": {
+            "range": [120, 1700]
+          }
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "x": {
+          "field": "age_group",
+          "type": "nominal",
+          "sort": ["Under 45", "45-54", "55-64", "65+"]
+        },
+        "y": {
+          "field": "smoke_group",
+          "type": "nominal",
+          "sort": ["Non-smoker", "Light smoker", "Moderate smoker", "Heavy smoker"]
+        },
+        "text": {
+          "field": "avg_sysbp",
+          "type": "quantitative",
+          "format": ".0f"
+        }
+      }
+    }
+  ]
+}

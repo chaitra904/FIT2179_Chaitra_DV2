@@ -1,0 +1,233 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 410,
+  "padding": {
+    "left": 24,
+    "right": 90,
+    "top": 8,
+    "bottom": 8
+  },
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#665761",
+      "titleColor": "#5d2740",
+      "gridColor": "#f0e0e6"
+    }
+  },
+  "data": {
+    "url": "data/global_cvd_burden_2025_2050.csv"
+  },
+  "transform": [
+    {
+      "filter": "indexof(['Australia', 'Nigeria', 'India', 'China', 'United States', 'Germany'], datum.country) >= 0"
+    },
+    {
+      "filter": "datum.year == 2025 || datum.year == 2050"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "point": {
+          "filled": true,
+          "size": 90
+        }
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "title": "Year",
+          "scale": {
+            "domain": [2024.2, 2051.8]
+          },
+          "axis": {
+            "values": [2025, 2050],
+            "labelExpr": "datum.value"
+          }
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative",
+          "title": "Projected mortality rate per 100,000 people",
+          "scale": {
+            "domain": [0, 420]
+          }
+        },
+        "detail": {
+          "field": "country"
+        },
+        "color": {
+          "field": "country",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Australia",
+              "Nigeria",
+              "India",
+              "China",
+              "United States",
+              "Germany"
+            ],
+            "range": [
+              "#5e2740",
+              "#a54e67",
+              "#d88936",
+              "#c4a000",
+              "#4f9a8f",
+              "#5c78c9"
+            ]
+          }
+        },
+        "strokeWidth": {
+          "condition": {
+            "test": "datum.country == 'Australia'",
+            "value": 4.2
+          },
+          "value": 2.8
+        },
+        "opacity": {
+          "condition": {
+            "test": "datum.country == 'Australia'",
+            "value": 1
+          },
+          "value": 0.9
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "year",
+            "title": "Year"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year == 2050"
+        },
+        {
+          "calculate": "datum.country + ' ' + format(datum.age_std_mortality_rate_per_100k, '.0f')",
+          "as": "end_label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 8,
+        "fontSize": 11,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "end_label"
+        },
+        "color": {
+          "field": "country",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Australia",
+              "Nigeria",
+              "India",
+              "China",
+              "United States",
+              "Germany"
+            ],
+            "range": [
+              "#5e2740",
+              "#a54e67",
+              "#d88936",
+              "#c4a000",
+              "#4f9a8f",
+              "#5c78c9"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year == 2025"
+        },
+        {
+          "calculate": "format(datum.age_std_mortality_rate_per_100k, '.0f')",
+          "as": "start_label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "middle",
+        "dx": -8,
+        "fontSize": 11,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "start_label"
+        },
+        "color": {
+          "field": "country",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Australia",
+              "Nigeria",
+              "India",
+              "China",
+              "United States",
+              "Germany"
+            ],
+            "range": [
+              "#5e2740",
+              "#a54e67",
+              "#d88936",
+              "#c4a000",
+              "#4f9a8f",
+              "#5c78c9"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

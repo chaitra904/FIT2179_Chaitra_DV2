@@ -1,0 +1,217 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 560,
+  "padding": 8,
+  "background": "transparent",
+  "params": [
+    {
+      "name": "selectedMetric",
+      "value": "Mortality Rate",
+      "bind": {
+        "input": "select",
+        "name": "Map Metric ",
+        "options": [
+          "Mortality Rate",
+          "DALYs",
+          "Prevention Score",
+          "Healthcare Pressure",
+          "Risk Burden"
+        ]
+      }
+    },
+    {
+      "name": "selectedCountryName",
+      "value": "Australia"
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "legend": {
+      "labelColor": "#665761",
+      "titleColor": "#5d2740",
+      "titleFontSize": 12,
+      "labelFontSize": 11
+    }
+  },
+  "projection": {
+    "type": "equalEarth"
+  },
+  "data": {
+    "url": "data/global_cvd_burden_2025_2050.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.year == 2050"
+    },
+    {
+      "fold": [
+        "age_std_mortality_rate_per_100k",
+        "daly_rate_per_100k",
+        "primary_prevention_score",
+        "healthcare_pressure_score",
+        "modifiable_risk_burden_pct"
+      ],
+      "as": ["metric_raw", "metric_value"]
+    },
+    {
+      "calculate": "datum.metric_raw == 'age_std_mortality_rate_per_100k' ? 'Mortality Rate' : datum.metric_raw == 'daly_rate_per_100k' ? 'DALYs' : datum.metric_raw == 'primary_prevention_score' ? 'Prevention Score' : datum.metric_raw == 'healthcare_pressure_score' ? 'Healthcare Pressure' : 'Risk Burden'",
+      "as": "metric_name"
+    },
+    {
+      "calculate": "datum.metric_name == 'Mortality Rate' ? format(datum.metric_value, '.1f') + ' per 100k' : datum.metric_name == 'DALYs' ? format(datum.metric_value, ',.0f') + ' per 100k' : datum.metric_name == 'Prevention Score' ? format(datum.metric_value, '.1f') + ' score' : datum.metric_name == 'Healthcare Pressure' ? format(datum.metric_value, '.0f') + ' score' : format(datum.metric_value, '.1f') + '%'",
+      "as": "metric_label"
+    },
+    {
+      "filter": "datum.metric_name == selectedMetric"
+    },
+    {
+      "lookup": "country",
+      "from": {
+        "data": {
+          "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/3_choropleth_map/js/ne_110m_admin_0_countries.topojson",
+          "format": {
+            "type": "topojson",
+            "feature": "ne_110m_admin_0_countries"
+          }
+        },
+        "key": "properties.NAME"
+      },
+      "as": "geo"
+    },
+    {
+      "filter": "datum.geo != null"
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "sphere": true
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#ece8eb"
+      }
+    },
+    {
+      "data": {
+        "graticule": true
+      },
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#f1dbe2",
+        "strokeWidth": 0.6,
+        "opacity": 0.8
+      }
+    },
+    {
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#fffaf8",
+        "strokeWidth": 0.7
+      },
+      "encoding": {
+        "shape": {
+          "field": "geo",
+          "type": "geojson"
+        },
+        "color": {
+          "field": "metric_value",
+          "type": "quantitative",
+          "title": "Selected metric value",
+          "scale": {
+            "range": [
+              "#fdeff3",
+              "#f7d8e2",
+              "#efb7c8",
+              "#dc88a2",
+              "#b95676",
+              "#742a46"
+            ]
+          },
+          "legend": {
+            "orient": "bottom",
+            "direction": "horizontal",
+            "gradientLength": 420,
+            "gradientThickness": 14
+          }
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "continent",
+            "title": "Continent"
+          },
+          {
+            "field": "region",
+            "title": "Region"
+          },
+          {
+            "field": "metric_name",
+            "title": "Selected metric"
+          },
+          {
+            "field": "metric_label",
+            "title": "Value"
+          },
+          {
+            "field": "crude_cvd_deaths",
+            "title": "Projected CVD deaths",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.country == selectedCountryName"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fillOpacity": 0,
+        "stroke": "#5e2740",
+        "strokeWidth": 3.2
+      },
+      "encoding": {
+        "shape": {
+          "field": "geo",
+          "type": "geojson"
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "continent",
+            "title": "Continent"
+          },
+          {
+            "field": "region",
+            "title": "Region"
+          },
+          {
+            "field": "metric_name",
+            "title": "Selected metric"
+          },
+          {
+            "field": "metric_label",
+            "title": "Value"
+          },
+          {
+            "field": "crude_cvd_deaths",
+            "title": "Projected CVD deaths",
+            "format": ","
+          }
+        ]
+      }
+    }
+  ]
+}

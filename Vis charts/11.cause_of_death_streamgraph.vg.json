@@ -1,0 +1,126 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 420,
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    }
+  },
+  "params": [
+    {
+      "name": "focusDisease",
+      "select": {
+        "type": "point",
+        "fields": ["disease"]
+      },
+      "bind": "legend"
+    }
+  ],
+  "data": {
+    "url": "data/cause_of_deaths.csv"
+  },
+  "transform": [
+    {
+      "fold": [
+        "Cardiovascular Diseases",
+        "Neoplasms",
+        "Chronic Respiratory Diseases",
+        "Diabetes Mellitus",
+        "Chronic Kidney Disease"
+      ],
+      "as": ["disease_raw", "deaths"]
+    },
+    {
+      "aggregate": [
+        {
+          "op": "sum",
+          "field": "deaths",
+          "as": "total_deaths"
+        }
+      ],
+      "groupby": ["Year", "disease_raw"]
+    },
+    {
+      "calculate": "datum.disease_raw == 'Cardiovascular Diseases' ? 'Cardiovascular diseases' : datum.disease_raw == 'Chronic Respiratory Diseases' ? 'Chronic respiratory diseases' : datum.disease_raw == 'Chronic Kidney Disease' ? 'Chronic kidney disease' : datum.disease_raw",
+      "as": "disease"
+    }
+  ],
+  "mark": {
+    "type": "area",
+    "interpolate": "monotone"
+  },
+  "encoding": {
+    "x": {
+      "field": "Year",
+      "type": "quantitative",
+      "title": "Year",
+      "axis": {
+        "tickMinStep": 5
+      }
+    },
+    "y": {
+      "field": "total_deaths",
+      "type": "quantitative",
+      "stack": "normalize",
+      "title": "Share within selected major disease groups",
+      "axis": {
+        "format": ".0%"
+      }
+    },
+    "color": {
+      "field": "disease",
+      "type": "nominal",
+      "title": "Disease group",
+      "scale": {
+        "domain": [
+          "Cardiovascular diseases",
+          "Neoplasms",
+          "Chronic respiratory diseases",
+          "Diabetes Mellitus",
+          "Chronic kidney disease"
+        ],
+        "range": ["#6f2743", "#a94768", "#c96f8b", "#e5a8ba", "#f5dbe4"]
+      },
+      "legend": {
+        "orient": "right"
+      }
+    },
+    "opacity": {
+      "condition": {
+        "param": "focusDisease",
+        "value": 1,
+        "empty": true
+      },
+      "value": 0.35
+    },
+    "order": {
+      "field": "disease",
+      "type": "nominal",
+      "sort": [
+        "Cardiovascular diseases",
+        "Neoplasms",
+        "Chronic respiratory diseases",
+        "Diabetes Mellitus",
+        "Chronic kidney disease"
+      ]
+    },
+    "tooltip": [
+      {
+        "field": "Year",
+        "title": "Year"
+      },
+      {
+        "field": "disease",
+        "title": "Disease group"
+      },
+      {
+        "field": "total_deaths",
+        "title": "Total deaths",
+        "format": ","
+      }
+    ]
+  }
+}

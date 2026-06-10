@@ -1,0 +1,247 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "padding": 8,
+  "spacing": 22,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#665761",
+      "titleColor": "#5d2740"
+    }
+  },
+  "hconcat": [
+    {
+      "width": 460,
+      "height": 360,
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "mean",
+              "field": "age_std_mortality_rate_per_100k",
+              "as": "avg_rate"
+            }
+          ],
+          "groupby": ["continent", "year"]
+        }
+      ],
+      "layer": [
+        {
+          "mark": {
+            "type": "line",
+            "point": {
+              "filled": true,
+              "size": 70
+            },
+            "strokeWidth": 2.8
+          },
+          "encoding": {
+            "x": {
+              "field": "year",
+              "type": "quantitative",
+              "title": "Year",
+              "axis": {
+                "tickMinStep": 5
+              }
+            },
+            "y": {
+              "field": "avg_rate",
+              "type": "quantitative",
+              "title": "Average age-standardised mortality",
+              "scale": {
+                "zero": false
+              }
+            },
+            "color": {
+              "field": "continent",
+              "type": "nominal",
+              "legend": null,
+              "scale": {
+                "domain": ["Africa", "Asia", "Americas", "Europe", "Oceania"],
+                "range": ["#a54e67", "#c4a000", "#d88936", "#4f9a8f", "#5c78c9"]
+              }
+            },
+            "tooltip": [
+              {
+                "field": "continent",
+                "title": "Continent"
+              },
+              {
+                "field": "year",
+                "title": "Year"
+              },
+              {
+                "field": "avg_rate",
+                "title": "Average mortality rate",
+                "format": ".1f"
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.year == 2050"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "dx": 8,
+            "fontSize": 11,
+            "fontWeight": "bold"
+          },
+          "encoding": {
+            "x": {
+              "field": "year",
+              "type": "quantitative"
+            },
+            "y": {
+              "field": "avg_rate",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "continent"
+            },
+            "color": {
+              "field": "continent",
+              "type": "nominal",
+              "legend": null,
+              "scale": {
+                "domain": ["Africa", "Asia", "Americas", "Europe", "Oceania"],
+                "range": ["#a54e67", "#c4a000", "#d88936", "#4f9a8f", "#5c78c9"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "width": 460,
+      "height": 360,
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "sum",
+              "field": "crude_cvd_deaths",
+              "as": "total_deaths"
+            }
+          ],
+          "groupby": ["continent", "year"]
+        },
+        {
+          "calculate": "datum.total_deaths / 1000000",
+          "as": "deaths_m"
+        },
+        {
+          "calculate": "datum.continent + ': ' + format(datum.deaths_m, '.1f') + 'M'",
+          "as": "deaths_label"
+        }
+      ],
+      "layer": [
+        {
+          "mark": {
+            "type": "line",
+            "point": {
+              "filled": true,
+              "size": 70
+            },
+            "strokeWidth": 2.8
+          },
+          "encoding": {
+            "x": {
+              "field": "year",
+              "type": "quantitative",
+              "title": "Year",
+              "axis": {
+                "tickMinStep": 5
+              }
+            },
+            "y": {
+              "field": "deaths_m",
+              "type": "quantitative",
+              "title": "Projected crude CVD deaths (millions)",
+              "scale": {
+                "zero": false
+              }
+            },
+            "color": {
+              "field": "continent",
+              "type": "nominal",
+              "legend": null,
+              "scale": {
+                "domain": ["Africa", "Asia", "Americas", "Europe", "Oceania"],
+                "range": ["#a54e67", "#c4a000", "#d88936", "#4f9a8f", "#5c78c9"]
+              }
+            },
+            "tooltip": [
+              {
+                "field": "continent",
+                "title": "Continent"
+              },
+              {
+                "field": "year",
+                "title": "Year"
+              },
+              {
+                "field": "deaths_m",
+                "title": "Projected deaths (millions)",
+                "format": ".2f"
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.year == 2050"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "dx": 8,
+            "fontSize": 11,
+            "fontWeight": "bold"
+          },
+          "encoding": {
+            "x": {
+              "field": "year",
+              "type": "quantitative"
+            },
+            "y": {
+              "field": "deaths_m",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "deaths_label"
+            },
+            "color": {
+              "field": "continent",
+              "type": "nominal",
+              "legend": null,
+              "scale": {
+                "domain": ["Africa", "Asia", "Americas", "Europe", "Oceania"],
+                "range": ["#a54e67", "#c4a000", "#d88936", "#4f9a8f", "#5c78c9"]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

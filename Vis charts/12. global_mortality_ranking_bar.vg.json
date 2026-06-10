@@ -1,0 +1,189 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 400,
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    }
+  },
+  "layer": [
+    {
+      "data": {
+    "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050"
+        },
+        {
+          "joinaggregate": [
+            {
+              "op": "median",
+              "field": "age_std_mortality_rate_per_100k",
+              "as": "global_median"
+            }
+          ]
+        },
+        {
+          "filter": "datum.country == 'Australia'"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "strokeDash": [6, 5],
+        "strokeWidth": 1.6,
+        "color": "#d9a6b7"
+      },
+      "encoding": {
+        "x": {
+          "field": "global_median",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050"
+        },
+        {
+          "window": [
+            {
+              "op": "rank",
+              "as": "rank"
+            }
+          ],
+          "sort": [
+            {
+              "field": "age_std_mortality_rate_per_100k",
+              "order": "descending"
+            }
+          ]
+        },
+        {
+          "filter": "datum.rank <= 12 || datum.country == 'Australia'"
+        },
+        {
+          "calculate": "datum.country == 'Australia' ? 'Australia' : 'Higher-burden countries'",
+          "as": "highlight"
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 8
+      },
+      "encoding": {
+        "y": {
+          "field": "country",
+          "type": "nominal",
+          "sort": "-x",
+          "title": null,
+          "axis": {
+            "labelFontWeight": "bold"
+          }
+        },
+        "x": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative",
+          "title": "Projected age-standardised mortality rate per 100,000",
+          "scale": {
+            "domain": [0, 330]
+          }
+        },
+        "color": {
+          "field": "highlight",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": ["Australia", "Higher-burden countries"],
+            "range": ["#5e2740", "#d58ea4"]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "rank",
+            "title": "Global rank"
+          },
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "continent",
+            "title": "Continent"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          },
+          {
+            "field": "crude_cvd_deaths",
+            "title": "Projected CVD deaths",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050"
+        },
+        {
+          "window": [
+            {
+              "op": "rank",
+              "as": "rank"
+            }
+          ],
+          "sort": [
+            {
+              "field": "age_std_mortality_rate_per_100k",
+              "order": "descending"
+            }
+          ]
+        },
+        {
+          "filter": "datum.rank <= 12 || datum.country == 'Australia'"
+        },
+        {
+          "calculate": "format(datum.age_std_mortality_rate_per_100k, '.1f')",
+          "as": "value_label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 8,
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "y": {
+          "field": "country",
+          "type": "nominal",
+          "sort": "-x"
+        },
+        "x": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "value_label"
+        }
+      }
+    }
+  ]
+}

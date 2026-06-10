@@ -1,0 +1,255 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 410,
+  "padding": 8,
+  "background": "transparent",
+  "params": [
+    {
+      "name": "selectedCountryName",
+      "value": "Australia"
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#665761",
+      "titleColor": "#5d2740"
+    }
+  },
+  "data": {
+    "url": "data/global_cvd_burden_2025_2050.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.year == 2050"
+    },
+    {
+      "calculate": "100 - datum.healthcare_pressure_score",
+      "as": "health_pressure_reversed"
+    },
+    {
+      "calculate": "indexof(['Australia','Germany','Japan','China','India','Nigeria'], datum.country) >= 0 || datum.country == selectedCountryName",
+      "as": "keep_country"
+    },
+    {
+      "filter": "datum.keep_country"
+    },
+    {
+      "calculate": "datum.country == selectedCountryName ? 0 : datum.country == 'Australia' ? 1 : datum.country == 'Germany' ? 2 : datum.country == 'Japan' ? 3 : datum.country == 'China' ? 4 : datum.country == 'India' ? 5 : datum.country == 'Nigeria' ? 6 : 7",
+      "as": "country_order"
+    },
+    {
+      "fold": [
+        "primary_prevention_score",
+        "hypertension_treatment_coverage_pct",
+        "statin_therapy_coverage_pct",
+        "cardiac_rehab_access_pct",
+        "health_pressure_reversed"
+      ],
+      "as": ["indicator_raw", "score"]
+    },
+    {
+      "calculate": "datum.indicator_raw == 'primary_prevention_score' ? 'Prevention' : datum.indicator_raw == 'hypertension_treatment_coverage_pct' ? 'BP treatment' : datum.indicator_raw == 'statin_therapy_coverage_pct' ? 'Statin therapy' : datum.indicator_raw == 'cardiac_rehab_access_pct' ? 'Cardiac rehab' : 'Lower pressure'",
+      "as": "indicator"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "strokeWidth": 0
+      },
+      "encoding": {
+        "x": {
+          "field": "indicator",
+          "type": "nominal",
+          "title": null,
+          "sort": [
+            "Prevention",
+            "BP treatment",
+            "Statin therapy",
+            "Cardiac rehab",
+            "Lower pressure"
+          ],
+          "scale": {
+            "paddingInner": 0,
+            "paddingOuter": 0
+          },
+          "axis": {
+            "labelAngle": 0,
+            "labelFontWeight": "bold",
+            "labelPadding": 8
+          }
+        },
+        "y": {
+          "field": "country",
+          "type": "nominal",
+          "title": null,
+          "sort": {
+            "field": "country_order",
+            "op": "min",
+            "order": "ascending"
+          },
+          "scale": {
+            "paddingInner": 0,
+            "paddingOuter": 0
+          },
+          "axis": {
+            "labelFontWeight": "bold",
+            "labelPadding": 8
+          }
+        },
+        "color": {
+          "field": "score",
+          "type": "quantitative",
+          "title": "Preparedness score",
+          "scale": {
+            "domain": [20, 90],
+            "clamp": true,
+            "range": [
+              "#f6eef1",
+              "#e9c9d5",
+              "#d69bb1",
+              "#b85b78",
+              "#8f3556",
+              "#5e2740"
+            ]
+          },
+          "legend": {
+            "orient": "bottom",
+            "direction": "horizontal",
+            "gradientLength": 220,
+            "gradientThickness": 14
+          }
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "indicator",
+            "title": "Indicator"
+          },
+          {
+            "field": "score",
+            "title": "Score",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.country == selectedCountryName"
+        }
+      ],
+      "mark": {
+        "type": "rect",
+        "fillOpacity": 0,
+        "stroke": "#3f1729",
+        "strokeWidth": 1.6
+      },
+      "encoding": {
+        "x": {
+          "field": "indicator",
+          "type": "nominal",
+          "sort": [
+            "Prevention",
+            "BP treatment",
+            "Statin therapy",
+            "Cardiac rehab",
+            "Lower pressure"
+          ],
+          "scale": {
+            "paddingInner": 0,
+            "paddingOuter": 0
+          }
+        },
+        "y": {
+          "field": "country",
+          "type": "nominal",
+          "sort": {
+            "field": "country_order",
+            "op": "min",
+            "order": "ascending"
+          },
+          "scale": {
+            "paddingInner": 0,
+            "paddingOuter": 0
+          }
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Selected country"
+          },
+          {
+            "field": "indicator",
+            "title": "Indicator"
+          },
+          {
+            "field": "score",
+            "title": "Score",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "indicator",
+          "type": "nominal",
+          "sort": [
+            "Prevention",
+            "BP treatment",
+            "Statin therapy",
+            "Cardiac rehab",
+            "Lower pressure"
+          ],
+          "scale": {
+            "paddingInner": 0,
+            "paddingOuter": 0
+          }
+        },
+        "y": {
+          "field": "country",
+          "type": "nominal",
+          "sort": {
+            "field": "country_order",
+            "op": "min",
+            "order": "ascending"
+          },
+          "scale": {
+            "paddingInner": 0,
+            "paddingOuter": 0
+          }
+        },
+        "text": {
+          "field": "score",
+          "type": "quantitative",
+          "format": ".0f"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.score >= 65",
+            "value": "#fffaf8"
+          },
+          "value": "#4f2134"
+        }
+      }
+    }
+  ]
+}

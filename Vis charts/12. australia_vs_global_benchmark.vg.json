@@ -1,0 +1,261 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 410,
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#665761",
+      "titleColor": "#5d2740",
+      "gridColor": "#f0e0e6"
+    }
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.country == 'Australia'"
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "point": {
+          "filled": true,
+          "size": 92
+        },
+        "strokeWidth": 4.4,
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "title": "Year",
+          "axis": {
+            "tickMinStep": 5
+          }
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative",
+          "title": "Projected mortality rate per 100,000 people",
+          "scale": {
+            "domain": [0, 430]
+          }
+        },
+        "tooltip": [
+          {
+            "value": "Australia",
+            "title": "Series"
+          },
+          {
+            "field": "year",
+            "title": "Year"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "mean",
+              "field": "age_std_mortality_rate_per_100k",
+              "as": "avg_rate"
+            }
+          ],
+          "groupby": ["year"]
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "strokeDash": [7, 4],
+        "point": {
+          "filled": true,
+          "size": 62
+        },
+        "strokeWidth": 2.8,
+        "color": "#ad5e79"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "avg_rate",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "value": "Global average",
+            "title": "Series"
+          },
+          {
+            "field": "year",
+            "title": "Year"
+          },
+          {
+            "field": "avg_rate",
+            "title": "Mortality rate",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "indexof(['Tajikistan','Kazakhstan','Azerbaijan','Georgia','Armenia','Uzbekistan','Kyrgyzstan','Turkmenistan','Ukraine','Nigeria'], datum.country) >= 0"
+        },
+        {
+          "aggregate": [
+            {
+              "op": "mean",
+              "field": "age_std_mortality_rate_per_100k",
+              "as": "avg_rate"
+            }
+          ],
+          "groupby": ["year"]
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "point": {
+          "filled": true,
+          "size": 66
+        },
+        "strokeWidth": 2.5,
+        "color": "#deb6c5"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "avg_rate",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "value": "High-burden settings",
+            "title": "Series"
+          },
+          {
+            "field": "year",
+            "title": "Year"
+          },
+          {
+            "field": "avg_rate",
+            "title": "Mortality rate",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "series": "Australia",
+            "year": 2050,
+            "rate": 20.9
+          },
+          {
+            "series": "Global average",
+            "year": 2050,
+            "rate": 173.7
+          },
+          {
+            "series": "High-burden settings",
+            "year": 2050,
+            "rate": 300.7
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontSize": 12,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "rate",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "series"
+        },
+        "color": {
+          "field": "series",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": ["Australia", "Global average", "High-burden settings"],
+            "range": ["#5e2740", "#ad5e79", "#deb6c5"]
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": 2039,
+            "y": 84,
+            "note": "Australia remains below the global average but still faces substantial future burden."
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#7b2d4d"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "note"
+        }
+      }
+    }
+  ]
+}

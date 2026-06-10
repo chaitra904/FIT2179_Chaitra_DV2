@@ -1,0 +1,197 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 360,
+  "padding": 8,
+  "background": "transparent",
+  "params": [
+    {
+      "name": "selectedDiseaseName",
+      "value": "All diseases"
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#665761",
+      "titleColor": "#5d2740",
+      "gridColor": "#f0e0e6"
+    }
+  },
+  "data": {
+    "url": "data/global_cvd_burden_2025_2050.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.year == 2050"
+    },
+    {
+      "fold": [
+        "high_sbp_attributable_deaths_pct",
+        "high_ldl_attributable_deaths_pct",
+        "high_bmi_attributable_deaths_pct",
+        "high_fpg_attributable_deaths_pct",
+        "tobacco_attributable_deaths_pct"
+      ],
+      "as": ["risk_raw", "value"]
+    },
+    {
+      "aggregate": [
+        {
+          "op": "mean",
+          "field": "value",
+          "as": "avg_value"
+        }
+      ],
+      "groupby": ["risk_raw"]
+    },
+    {
+      "calculate": "datum.risk_raw == 'high_sbp_attributable_deaths_pct' ? 'High blood pressure' : datum.risk_raw == 'high_ldl_attributable_deaths_pct' ? 'High LDL cholesterol' : datum.risk_raw == 'high_bmi_attributable_deaths_pct' ? 'High BMI' : datum.risk_raw == 'high_fpg_attributable_deaths_pct' ? 'High blood glucose' : 'Tobacco'",
+      "as": "risk"
+    },
+    {
+      "window": [
+        {
+          "op": "rank",
+          "as": "rank"
+        }
+      ],
+      "sort": [
+        {
+          "field": "avg_value",
+          "order": "descending"
+        }
+      ]
+    },
+    {
+      "calculate": "selectedDiseaseName == 'All diseases' ? 1 : selectedDiseaseName == 'Stroke' && indexof(['High blood pressure','High blood glucose','Tobacco'], datum.risk) >= 0 ? 1 : selectedDiseaseName == 'Ischaemic heart disease' && indexof(['High blood pressure','High LDL cholesterol','Tobacco'], datum.risk) >= 0 ? 1 : selectedDiseaseName == 'Hypertensive heart disease' && indexof(['High blood pressure','High BMI'], datum.risk) >= 0 ? 1 : selectedDiseaseName == 'Heart failure' && indexof(['High blood pressure','High blood glucose','High BMI'], datum.risk) >= 0 ? 1 : selectedDiseaseName == 'Peripheral artery disease' && indexof(['Tobacco','High blood pressure','High LDL cholesterol'], datum.risk) >= 0 ? 1 : 0",
+      "as": "highlight"
+    },
+    {
+      "calculate": "format(datum.avg_value, '.1f') + '%'",
+      "as": "value_label"
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "values": [{}]
+      },
+      "transform": [
+        {
+          "calculate": "selectedDiseaseName == 'All diseases' ? 'Click a disease block to spotlight related risks' : 'Spotlighting risks most closely linked to ' + selectedDiseaseName",
+          "as": "note"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "color": "#7b2d4d"
+      },
+      "encoding": {
+        "x": {
+          "value": 2
+        },
+        "y": {
+          "value": 10
+        },
+        "text": {
+          "field": "note"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 8
+      },
+      "encoding": {
+        "y": {
+          "field": "risk",
+          "type": "nominal",
+          "sort": "-x",
+          "title": null,
+          "axis": {
+            "labelFontWeight": "bold"
+          }
+        },
+        "x": {
+          "field": "avg_value",
+          "type": "quantitative",
+          "title": "Average attributable share of cardiovascular deaths (%)",
+          "scale": {
+            "domain": [0, 50]
+          }
+        },
+        "color": {
+          "condition": [
+            {
+              "test": "selectedDiseaseName != 'All diseases' && datum.highlight == 1",
+              "value": "#6f2743"
+            },
+            {
+              "test": "selectedDiseaseName == 'All diseases' && datum.rank == 1",
+              "value": "#6f2743"
+            }
+          ],
+          "value": "#d9a8ba"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedDiseaseName == 'All diseases' || datum.highlight == 1",
+            "value": 1
+          },
+          "value": 0.35
+        },
+        "tooltip": [
+          {
+            "field": "risk",
+            "title": "Risk factor"
+          },
+          {
+            "field": "avg_value",
+            "title": "Average contribution",
+            "format": ".1f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 8,
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "y": {
+          "field": "risk",
+          "type": "nominal",
+          "sort": "-x"
+        },
+        "x": {
+          "field": "avg_value",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "value_label"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedDiseaseName == 'All diseases' || datum.highlight == 1",
+            "value": 1
+          },
+          "value": 0.45
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 540,
+  "padding": 8,
+  "background": "transparent",
+  "params": [
+    {
+      "name": "selectedCountryName",
+      "value": "Australia"
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#665761",
+      "titleColor": "#5d2740",
+      "gridColor": "#f0e0e6"
+    },
+    "legend": {
+      "labelColor": "#665761",
+      "titleColor": "#5d2740"
+    }
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050 && datum.primary_prevention_score > 0 && datum.age_std_mortality_rate_per_100k > 0 && datum.crude_cvd_deaths > 0"
+        },
+        {
+          "regression": "age_std_mortality_rate_per_100k",
+          "on": "primary_prevention_score"
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "strokeDash": [7, 4],
+        "strokeWidth": 3.2,
+        "color": "#7b2d4d"
+      },
+      "encoding": {
+        "x": {
+          "field": "primary_prevention_score",
+          "type": "quantitative",
+          "title": "Prevention capacity score",
+          "scale": {
+            "domain": [20, 85]
+          }
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative",
+          "title": "Projected mortality rate per 100,000 people",
+          "scale": {
+            "domain": [0, 330]
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050 && datum.primary_prevention_score > 0 && datum.age_std_mortality_rate_per_100k > 0 && datum.crude_cvd_deaths > 0"
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "opacity": 0.78,
+        "stroke": "#fffdfb",
+        "strokeWidth": 1.2
+      },
+      "encoding": {
+        "x": {
+          "field": "primary_prevention_score",
+          "type": "quantitative",
+          "title": "Prevention capacity score",
+          "scale": {
+            "domain": [20, 85]
+          }
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative",
+          "title": "Projected mortality rate per 100,000 people",
+          "scale": {
+            "domain": [0, 330]
+          }
+        },
+        "size": {
+          "field": "crude_cvd_deaths",
+          "type": "quantitative",
+          "title": "Projected CVD deaths",
+          "scale": {
+            "range": [70, 1700]
+          },
+          "legend": {
+            "format": ".2s"
+          }
+        },
+        "color": {
+          "field": "continent",
+          "type": "nominal",
+          "title": "Continent",
+          "scale": {
+            "domain": ["Africa", "Americas", "Asia", "Europe", "Oceania"],
+            "range": ["#d8a7b1", "#f2b880", "#f3d36b", "#9fc9c4", "#a9b7e8"]
+          }
+        },
+        "opacity": {
+          "condition": {
+            "test": "datum.country == selectedCountryName",
+            "value": 1
+          },
+          "value": 0.72
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Country"
+          },
+          {
+            "field": "continent",
+            "title": "Continent"
+          },
+          {
+            "field": "primary_prevention_score",
+            "title": "Prevention score",
+            "format": ".1f"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          },
+          {
+            "field": "crude_cvd_deaths",
+            "title": "Projected deaths",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050 && datum.country == selectedCountryName"
+        }
+      ],
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "shape": "diamond",
+        "size": 300,
+        "color": "#5e2740",
+        "stroke": "#f9e3ea",
+        "strokeWidth": 2.4
+      },
+      "encoding": {
+        "x": {
+          "field": "primary_prevention_score",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "country",
+            "title": "Selected country"
+          },
+          {
+            "field": "primary_prevention_score",
+            "title": "Prevention score",
+            "format": ".1f"
+          },
+          {
+            "field": "age_std_mortality_rate_per_100k",
+            "title": "Mortality rate",
+            "format": ".1f"
+          },
+          {
+            "field": "crude_cvd_deaths",
+            "title": "Projected deaths",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/global_cvd_burden_2025_2050.csv"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2050 && datum.country == selectedCountryName"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "dy": -10,
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#5e2740"
+      },
+      "encoding": {
+        "x": {
+          "field": "primary_prevention_score",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "age_std_mortality_rate_per_100k",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "country"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": 74,
+            "y": 66,
+            "note": "Stronger prevention systems are associated with lower projected mortality."
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#7b2d4d"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "note"
+        }
+      }
+    }
+  ]
+}
